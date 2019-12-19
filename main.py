@@ -42,8 +42,8 @@ train_y = training_dataset.iloc[:, result].values
 
 
 # Encoding training dataset
-#encoding_train_y = np_utils.to_categorical(train_y)
-encoding_train_y =train_y
+encoding_train_y = np_utils.to_categorical(train_y)
+#encoding_train_y =train_y
 
 # Import testing dataset
 test_dataset = pd.read_csv('testing.csv', names=COLUMN_NAMES, header=0)
@@ -51,18 +51,18 @@ test_x = test_dataset.iloc[:, 0:end].values
 test_y = test_dataset.iloc[:, result].values
 
 # Encoding training dataset
-#encoding_test_y = np_utils.to_categorical(test_y)
-encoding_test_y = test_y
+encoding_test_y = np_utils.to_categorical(test_y)
+#encoding_test_y = test_y
 
 # Creating a model
 model = Sequential()
-model.add(Dense(10, input_dim=18, activation='relu'))
-model.add(Dense(10, activation='relu'))
-#model.add(Dense(8, activation='sigmoid', use_bias=True))
-model.add(Dense(1, activation='softmax'))
+model.add(Dense(10, input_dim=18, activation='sigmoid'))
+model.add(Dense(10, activation='sigmoid', use_bias=True))
+model.add(Dense(10, activation='sigmoid'))
+model.add(Dense(2, activation='softmax'))
 
 # Compiling model
-model.compile(loss='mean_squared_error', optimizer='adam', metrics=['accuracy'])
+model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
 
 # Training a model
 model.fit(train_x, encoding_train_y, epochs=300, batch_size=10)
@@ -71,13 +71,12 @@ model.fit(train_x, encoding_train_y, epochs=300, batch_size=10)
 scores = model.evaluate(test_x, encoding_test_y)
 print("\nAccuracy: %.2f%%" % (scores[1]*100))
 
-
-
-predict_dataset = pd.read_csv('predict.csv', names=COLUMN_NAMES, header=0)
-predict_x = predict_dataset.iloc[0:1, 0:end].values
-y = predict_dataset.iloc[0, result]
-predict_value = model.predict_classes(predict_x)
-print(predict_value, y)
+for i in range(0, 10):
+    predict_dataset = pd.read_csv('predict.csv', names=COLUMN_NAMES, header=0)
+    predict_x = predict_dataset.iloc[i:i+1, 0:end].values
+    y = predict_dataset.iloc[i, result]
+    predict_value = model.predict_classes(predict_x)
+    print(predict_value[0], y)
 
 
 
